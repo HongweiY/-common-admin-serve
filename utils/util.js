@@ -2,7 +2,8 @@
  * 通用工具函数
  * @type {{}}
  */
-import log4j from './log4j'
+
+const log4j = require('./log4j')
 
 const CODE = {
     SUCCESS: 200,
@@ -39,11 +40,12 @@ module.exports = {
             data
         }
     },
-    fail(code = CODE.BUSINESS_ERROR, msg = '') {
+    fail(msg = '', code = CODE.BUSINESS_ERROR) {
         log4j.error(msg)
         return {
             code,
             msg
         }
-    }
+    },
+    CODE
 }
