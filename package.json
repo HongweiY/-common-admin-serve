@@ -25,7 +25,13 @@
     "pug": "^2.0.3"
   },
   "devDependencies": {
+    "eslint": "^8.10.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.2.0",
     "log4js": "^6.4.2",
+    "md5": "^2.3.0",
     "nodemon": "^1.19.1"
   }
 }
