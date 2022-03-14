@@ -6,10 +6,11 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const log4js = require('./utils/log4j')
-const users = require('./routes/users')
 const router = require('koa-router')()
 const koaJwt = require('koa-jwt')
 const util = require('./utils/util')
+const users = require('./routes/users')
+const menus = require('./routes/menus')
 
 // error handler
 onerror(app)
@@ -17,7 +18,7 @@ require('./config/db')
 const path = require('path')
 // middlewares
 app.use(bodyparser({
-  enableTypes: ['json', 'form', 'text']
+    enableTypes: ['json', 'form', 'text']
 }))
 app.use(json())
 app.use(logger())
@@ -25,35 +26,37 @@ app.use(logger())
 app.use(require('koa-static')(path.join(__dirname, '/public')))
 
 app.use(views(path.join(__dirname, '/views'), {
-  extension: 'pug'
+    extension: 'pug'
 }))
 
 // logger
 app.use(async (ctx, next) => {
-  log4js.info(`${ctx.method} params:${ctx.method === 'GET' ? JSON.stringify(ctx.request.query) : JSON.stringify(ctx.request.body)}`)
-  await next().catch((err) => {
-    if (err.status === '401') {
-      ctx.status = 200
-      ctx.body = util.fail('Token 认证失败', util.CODE.AUTH_ERROR)
-    } else {
-      throw err
-    }
-  })
+    log4js.info(`${ctx.method} params:${ctx.method === 'GET' ? JSON.stringify(ctx.request.query) : JSON.stringify(ctx.request.body)}`)
+    await next().catch((err) => {
+        if (err.status === '401') {
+            ctx.status = 200
+            ctx.body = util.fail('Token 认证失败', util.CODE.AUTH_ERROR)
+        } else {
+            throw err
+        }
+    })
 })
 // token 验证
 app.use(koaJwt({ secret: 'ymfsder' }).unless({
-  path: [/^\/api\/users\/login/]
+    path: [/^\/api\/users\/login/]
 }))
 
 // routes
 router.prefix('/api')
 
 router.use(users.routes(), users.allowedMethods())
+router.use(menus.routes(), menus.allowedMethods())
+
 app.use(router.routes(), router.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {
-  console.error('server error', err, ctx)
+    console.error('server error', err, ctx)
 })
 
 module.exports = app
