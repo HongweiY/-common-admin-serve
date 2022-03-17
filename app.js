@@ -11,6 +11,7 @@ const koaJwt = require('koa-jwt')
 const util = require('./utils/util')
 const users = require('./routes/users')
 const menus = require('./routes/menus')
+const roles = require('./routes/roles')
 
 // error handler
 onerror(app)
@@ -33,7 +34,7 @@ app.use(views(path.join(__dirname, '/views'), {
 app.use(async (ctx, next) => {
     log4js.info(`${ctx.method} params:${ctx.method === 'GET' ? JSON.stringify(ctx.request.query) : JSON.stringify(ctx.request.body)}`)
     await next().catch((err) => {
-        if (err.status === '401') {
+        if (err.status === 401) {
             ctx.status = 200
             ctx.body = util.fail('Token 认证失败', util.CODE.AUTH_ERROR)
         } else {
@@ -50,6 +51,7 @@ app.use(koaJwt({ secret: 'ymfsder' }).unless({
 router.prefix('/api')
 
 router.use(users.routes(), users.allowedMethods())
+router.use(roles.routes(), roles.allowedMethods())
 router.use(menus.routes(), menus.allowedMethods())
 
 app.use(router.routes(), router.allowedMethods())

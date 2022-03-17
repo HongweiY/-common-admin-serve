@@ -4,12 +4,12 @@
 const log4js = require('log4js')
 
 const levels = {
-    'trace': log4js.levels.TRACE,
-    'debug': log4js.levels.DEBUG,
-    'info': log4js.levels.INFO,
-    'warn': log4js.levels.WARN,
-    'error': log4js.levels.ERROR,
-    'fatal': log4js.levels.FATAL
+    trace: log4js.levels.TRACE,
+    debug: log4js.levels.DEBUG,
+    info: log4js.levels.INFO,
+    warn: log4js.levels.WARN,
+    error: log4js.levels.ERROR,
+    fatal: log4js.levels.FATAL
 }
 
 log4js.configure({
@@ -18,14 +18,10 @@ log4js.configure({
             type: 'console'
         },
         info: {
-            type: 'file',
-            filename: 'logs/all-the-logs.log'
+            type: 'file', filename: 'logs/all-the-logs.log'
         },
         error: {
-            type: 'dateFile',
-            filename: 'logs/log',
-            pattern: 'yyyy-MM-dd.log',
-            alwaysIncludePattern: true
+            type: 'dateFile', filename: 'logs/log', pattern: 'yyyy-MM-dd.log', alwaysIncludePattern: true
 
         }
     },
@@ -34,10 +30,10 @@ log4js.configure({
             appenders: ['console'], level: 'debug'
         },
         info: {
-            appenders: ['console','info'], level: 'info'
+            appenders: ['console', 'info'], level: 'info'
         },
         error: {
-            appenders: ['console','error'], level: 'error'
+            appenders: ['console', 'error'], level: 'error'
         }
 
     }
@@ -48,7 +44,7 @@ log4js.configure({
  * @param content
  */
 exports.debug = (content) => {
-    let logger = log4js.getLogger('debug')
+    const logger = log4js.getLogger('debug')
     logger.level = levels.debug
     logger.debug(content)
 }
@@ -58,7 +54,7 @@ exports.debug = (content) => {
  * @param content
  */
 exports.info = (content) => {
-    let logger = log4js.getLogger('info')
+    const logger = log4js.getLogger('info')
     logger.level = levels.info
     logger.info(content)
 }
@@ -67,7 +63,7 @@ exports.info = (content) => {
  * @param content
  */
 exports.warn = (content) => {
-    let logger = log4js.getLogger('warn')
+    const logger = log4js.getLogger('warn')
     logger.level = levels.warn
     logger.warn(content)
 }
@@ -76,8 +72,7 @@ exports.warn = (content) => {
  * @param content
  */
 exports.error = (content) => {
-    let logger = log4js.getLogger('error')
+    const logger = log4js.getLogger('error')
     logger.level = levels.error
     logger.error(content)
 }
-
