@@ -61,6 +61,11 @@ router.get('/list', async (ctx) => {
         ctx.body = util.fail(`查询异常${e.stack}`)
     }
 })
+
+router.get('/allUsers', async (ctx) => {
+    const list = await User.find({}, { userId: 1, userName: 1, userEmail: 1 })
+    ctx.body = util.success(list)
+})
 // 新增用户
 router.post('/create', async (ctx) => {
     const { deptId, job, mobile, role, roleList, state, userEmail, userName, _id, action } = ctx.request.body

@@ -12,6 +12,7 @@ const util = require('./utils/util')
 const users = require('./routes/users')
 const menus = require('./routes/menus')
 const roles = require('./routes/roles')
+const dept = require('./routes/dept')
 
 // error handler
 onerror(app)
@@ -53,6 +54,7 @@ router.prefix('/api')
 router.use(users.routes(), users.allowedMethods())
 router.use(roles.routes(), roles.allowedMethods())
 router.use(menus.routes(), menus.allowedMethods())
+router.use(dept.routes(), dept.allowedMethods())
 
 app.use(router.routes(), router.allowedMethods())
 
