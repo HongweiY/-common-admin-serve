@@ -42,6 +42,25 @@ module.exports = {
         return {
             code, msg
         }
+    }, // 组装树形菜单
+    getTreeMenu (rootList, id, list) {
+        for (let i = 0; i < rootList.length; i++) {
+            const item = rootList[i]
+            if (String(item.parentId.slice().pop()) === String(id)) {
+                list.push(item._doc)
+            }
+        }
+        list.forEach(item => {
+            item.children = []
+            this.getTreeMenu(rootList, item._id, item.children)
+            if (item.children.length === 0) {
+                delete item.children
+            } else if (item.children.length > 0 && item.children[0].menuType === 2) {
+                item.action = item.children
+            }
+        })
+
+        return list
     },
     CODE
 }

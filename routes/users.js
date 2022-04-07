@@ -4,6 +4,8 @@
  */
 const router = require('koa-router')()
 const User = require('../models/userSchema')
+const Menu = require('../models/menuSchema')
+const Role = require('../models/rolesSchema')
 const util = require('../utils/util')
 const jwt = require('jsonwebtoken')
 const md5 = require('md5')
@@ -14,7 +16,7 @@ router.post('/login', async (ctx) => {
     try {
         const { username, userPwd } = ctx.request.body
         const res = await User.findOne({
-            username, userPwd
+            username, userPwd: md5(userPwd)
         }, 'usrId userName userEmail state role deptId roleList')
         if (res) {
             const data = res._doc
@@ -123,5 +125,58 @@ router.post('/delete', async (ctx) => {
     }
     ctx.body = util.fail('删除失败')
 })
+// 根据用户权限获取对应的菜单
+router.get('/permission', async (ctx) => {
+    const authorization = ctx.request.headers.authorization
+    const token = authorization.split(' ')[1]
+    const { data } = jwt.decode(token)
+    const menuList = await getMenuList(data.role, data.roleList)
+    const treeMenu = util.getTreeMenu(menuList, null, [])
+    const actionList = getActionList(JSON.parse(JSON.stringify(menuList)))
+    ctx.body = util.success({ menuList: treeMenu, actionList })
+})
+
+// 获取菜单列表
+async function getMenuList (role, roleKeys) {
+    let menuRoot = []
+    // 超级管理
+    if (role === 0) {
+        menuRoot = await Menu.find() || []
+    } else {
+        // 根据权限获取菜单
+        const roleList = await Role.find({ _id: { $in: roleKeys } }) || []
+        console.log('roleList====' + roleList)
+        let menuIds = []
+        // eslint-disable-next-line array-callback-return
+        roleList.map(role => {
+            const { checkedKeys, halfCheckKeys } = role.permissionList
+            menuIds = menuIds.concat([...checkedKeys, ...halfCheckKeys])
+        })
+        menuIds = [...new Set(menuIds)]
+        menuRoot = await Menu.find({ _id: { $in: menuIds } })
+    }
+    return menuRoot
+}
+
+// 获取按钮列表
+function getActionList (list) {
+    const actionList = []
+    const deep = (arr) => {
+        while (arr.length) {
+            const item = arr.pop()
+            if (item.action) {
+                // eslint-disable-next-line array-callback-return
+                item.action.map(action => {
+                    actionList.push(action.menuCode)
+                })
+            }
+            if (!item.action && item.children) {
+                deep(item.children)
+            }
+        }
+    }
+    deep(list)
+    return actionList
+}
 
 module.exports = router
