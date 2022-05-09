@@ -34,7 +34,6 @@ function getTreeDept (rootList, id, list) {
             delete item.children
         }
     })
-
     return list
 }
 

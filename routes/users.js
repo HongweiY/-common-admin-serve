@@ -139,8 +139,8 @@ router.get('/permission', async (ctx) => {
 // 获取菜单列表
 async function getMenuList (role, roleKeys) {
     let menuRoot = []
-    // 超级管理
     if (role === 0) {
+        // 超级管理
         menuRoot = await Menu.find() || []
     } else {
         // 根据权限获取菜单
